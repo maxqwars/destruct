@@ -2,9 +2,10 @@
   "name": "@maxqwars/destruct",
   "version": "1.0.0",
   "description": "Modern fork of keyword-extractor (Michael De Lorenzo <michael@delorenzodesign.com> (http://mikedelorenzo.com))",
-  "main": "index.js",
+  "type": "module",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "licenses": [
     {
@@ -13,5 +14,8 @@
     }
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
 }
