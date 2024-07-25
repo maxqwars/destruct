@@ -1,11 +1,13 @@
 {
   "name": "@maxqwars/destruct",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Modern fork of keyword-extractor (Michael De Lorenzo <michael@delorenzodesign.com> (http://mikedelorenzo.com))",
   "type": "module",
   "main": "lib/index.js",
+  "types": "/lib/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "install": "tsc"
   },
   "licenses": [
     {
