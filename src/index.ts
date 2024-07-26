@@ -124,7 +124,7 @@ const DEFAULT_OPTIONS: DestructOptions = {
 
 export const destruct: DestructFunction = function (
   str,
-  options = DEFAULT_OPTIONS
+  options = DEFAULT_OPTIONS,
 ) {
   if (!str) {
     return [];
@@ -225,7 +225,7 @@ export const destruct: DestructFunction = function (
 };
 
 function getLanguageMapping(
-  requestedLanguage: LanguageName
+  requestedLanguage: LanguageName,
 ): string | LanguageName {
   if (typeof requestedLanguage !== "string") {
     return "";
@@ -242,7 +242,7 @@ function getStopwords(options: GetStopwordsOptions): string[] {
 
 function sanitizeLanguage(requestLanguage: LanguageName): LanguageName | never {
   const errorMessage = `Language must be one of [${SUPPORTED_LANGUAGE_CODES.join(
-    ", "
+    ", ",
   )}]`;
 
   if (typeof requestLanguage !== "string") {
