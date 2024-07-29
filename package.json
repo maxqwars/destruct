@@ -2,15 +2,21 @@
   "name": "@maxqwars/destruct",
   "version": "1.0.1",
   "description": "Modern fork of keyword-extractor (Michael De Lorenzo <michael@delorenzodesign.com> (http://mikedelorenzo.com))",
+  "private": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "/lib"
   ],
   "scripts": {
+    "prebuild": "rimraf lib",
     "build": "tsc",
     "install": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test",
+    "version": "git add .",
+    "postversion": "git push && git push --tags"
   },
   "licenses": [
     {
@@ -23,7 +29,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.12",
-    "i": "^0.3.7",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.2.3",
     "typescript": "^5.5.4"
   }
