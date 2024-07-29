@@ -159,103 +159,100 @@ interface DestructFunction {
 }
 
 export const destruct: DestructFunction = function (
-  str,
+  str: string,
   options = DESTRUCT_DEFAULT_OPTIONS
 ) {
-  if (!str) {
-    return [];
-  }
+  if (!str) return [];
 
   const {
+    language,
     returnChangedCase,
     returnChainedWords,
     removeDigits,
-    language,
     removeDuplicates,
     returnMaxNGrams,
   } = options;
 
-  const cleared = str.replace(/(<([^>]+)>)/gi, "").trim();
+  const selectedLanguage = sanitizeLanguage(language);
+  const text = str.replace(/(<([^>]+)>)/gi, "").trim();
 
-  if (!cleared) {
-    return [];
-  } else {
-    const words = cleared.split(/\s/);
-    const unchangedWords: string[] = [];
-    const lowWords: string[] = [];
+  if (!text) return [];
 
-    for (let i = 0; i < words.length; i++) {
-      let word: string = words[i].match(/https?:\/\/.*[\r\n]*/g)
-        ? words[i]
-        : words[i].replace(/\.|,|;|!|\?|\(|\)|:|"|^'|'$|“|”|‘|’/g, "");
+  const words = text.split(/\s/);
+  const unchangedWords = [];
+  const lowercaseWords = [];
 
-      if (word.length === 1) {
-        word = word.replace(/_|@|&|#/g, "");
-      }
+  //? Change the case of all the words
+  for (let x = 0; x < words.length; x++) {
+    let word = words[x].match(/https?:\/\/.*[\r\n]*/g)
+      ? words[x]
+      : words[x].replace(/\.|,|;|!|\?|\(|\)|:|"|^'|'$|“|”|‘|’/g, "");
 
-      const digitMatch = word.match(/\d/g);
-      if (removeDigits && digitMatch && digitMatch.length === word.length) {
-        word = "";
-      }
-
-      if (word.length > 0) {
-        lowWords.push(word.toLocaleLowerCase());
-        unchangedWords.push(word);
-      }
+    //  remove periods, question marks, exclamation points, commas, and semi-colons
+    //  if this is a short result, make sure it's not a single character or something 'odd'
+    if (word.length === 1) {
+      word = word.replace(/_|@|&|#/g, "");
     }
 
-    let result: string[] = [];
-    const stopwords = getStopwords({ language });
-    let lastResultWordIndex = 0;
-    let startResultWordIndex = 0;
-    let unbrokenWordChain = false;
-
-    for (let x = 0; x < lowWords.length; x++) {
-      if (stopwords.indexOf(lowWords[x]) < 0) {
-        if (lastResultWordIndex !== x - 1) {
-          startResultWordIndex = x;
-          unbrokenWordChain = false;
-        } else {
-          unbrokenWordChain = true;
-        }
-
-        const resultWord =
-          returnChangedCase && !unchangedWords[x].match(/https?:\/\/.*[\r\n]*/g)
-            ? lowWords[x]
-            : unchangedWords[x];
-
-        if (
-          returnMaxNGrams &&
-          unbrokenWordChain &&
-          !returnChainedWords &&
-          returnMaxNGrams > x - startResultWordIndex &&
-          lastResultWordIndex === x - 1
-        ) {
-          const changePos = result.length - 1 < 0 ? 0 : result.length - 1;
-          result[changePos] = result[changePos]
-            ? result[changePos] + " " + resultWord
-            : resultWord;
-        } else if (returnChainedWords && lastResultWordIndex === x - 1) {
-          const changePos = result.length - 1 < 0 ? 0 : result.length - 1;
-          result[changePos] = result[changePos]
-            ? result[changePos] + " " + resultWord
-            : resultWord;
-        } else {
-          result.push(resultWord);
-        }
-
-        lastResultWordIndex = x;
-      } else {
-        unbrokenWordChain = false;
-      }
-
-      if (removeDuplicates) {
-        result = result.filter((v, i, a) => a.indexOf(v) === i);
-      }
-
-      return result;
+    //  if it's a number, remove it
+    const isDigit = word.match(/\d/g);
+    if (removeDigits && isDigit && isDigit.length === word.length) word = "";
+    if (word.length > 0) {
+      lowercaseWords.push(word.toLocaleLowerCase());
+      unchangedWords.push(word);
     }
   }
 
-  return [];
+  let results: string[] = [];
+  const stopwords = getStopwords({ language });
+  let lastResultWordIndex = 0;
+  let startResultWordIndex = 0;
+  let unbrokenResultWordIndex: number | boolean = 0;
+
+  for (let y = 0; y < lowercaseWords.length; y++) {
+    if (stopwords.indexOf(lowercaseWords[y]) < 0) {
+      if (lastResultWordIndex !== y - 1) {
+        startResultWordIndex = y;
+        unbrokenResultWordIndex = false;
+      } else {
+        unbrokenResultWordIndex = true;
+      }
+      const resultWord =
+        returnChainedWords && !unchangedWords[y].match(/https?:\/\/.*[\r\n]*/g)
+          ? lowercaseWords[y]
+          : unchangedWords[y];
+
+      if (
+        returnMaxNGrams &&
+        unbrokenResultWordIndex &&
+        !returnChainedWords &&
+        returnMaxNGrams > y - startResultWordIndex &&
+        lastResultWordIndex === y - 1
+      ) {
+        const changePosition = results.length - 1 < 0 ? 0 : results.length - 1;
+        results[changePosition] = results[changePosition]
+          ? results[changePosition] + " " + resultWord
+          : resultWord;
+      } else if (returnChainedWords && lastResultWordIndex === y - 1) {
+        const changePosition = results.length - 1 < 0 ? 0 : results.length - 1;
+        results[changePosition] = results[changePosition]
+          ? results[changePosition] + " " + resultWord
+          : resultWord;
+      } else {
+        results.push(resultWord);
+      }
+
+      lastResultWordIndex = y;
+    } else {
+      unbrokenResultWordIndex = false;
+    }
+
+    if (removeDuplicates) {
+      results = results.filter((v, i, a) => a.indexOf(v) === i);
+    }
+  }
+
+  return returnChangedCase
+    ? results.map((w) => w.toLocaleLowerCase())
+    : results;
 };

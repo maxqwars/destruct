@@ -11,7 +11,7 @@ describe("ISO 639-1 language code format", () => {
     );
 
     expect(result).not.toBeFalsy();
-    expect(result).toBe([
+    expect(result).toStrictEqual([
       "president",
       "obama",
       "woke",
@@ -36,7 +36,7 @@ describe("ISO 639-1 language code format", () => {
     );
 
     expect(result).not.toBeFalsy();
-    expect(result).toBe([
+    expect(result).toStrictEqual([
       "президент",
       "обама",
       "проснулся",
