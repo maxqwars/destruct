@@ -9,17 +9,22 @@
   ],
   "scripts": {
     "build": "tsc",
-    "install": "tsc"
+    "install": "tsc",
+    "test": "jest"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/mmaxqwars/destruct/raw/main/LICENSE"
+      "url": "https://github.com/maxqwars/destruct/raw/main/LICENSE"
     }
   ],
   "author": "Maxim \"maxqwars\" Maximenko <maxqwars@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "i": "^0.3.7",
+    "ts-jest": "^29.2.3",
     "typescript": "^5.5.4"
   }
 }
